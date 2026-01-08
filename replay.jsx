@@ -4,11 +4,12 @@ import { createRoot } from "react-dom/client";
 import { Player } from "@websim/remotion/player";
 import { AbsoluteFill, useCurrentFrame, useVideoConfig, Audio, Sequence } from "remotion";
 import * as THREE from "three";
-const ReplayScene = ({ data }) => {
+const ReplayScene = ({ data, initialMuted = false }) => {
   const frameIndex = useCurrentFrame();
   const { width, height } = useVideoConfig();
   const containerRef = useRef(null);
   const [avatarSrc, setAvatarSrc] = useState(null);
+  const [isMuted, setIsMuted] = useState(initialMuted);
   const audioCues = useMemo(() => {
     const cues = [];
     if (!data || !data.frames) return cues;
@@ -199,7 +200,7 @@ const ReplayScene = ({ data }) => {
   return /* @__PURE__ */ jsxDEV(AbsoluteFill, { children: [
     /* @__PURE__ */ jsxDEV("div", { ref: containerRef, style: { width: "100%", height: "100%" } }, void 0, false, {
       fileName: "<stdin>",
-      lineNumber: 271,
+      lineNumber: 272,
       columnNumber: 13
     }),
     /* @__PURE__ */ jsxDEV("div", { style: {
@@ -240,7 +241,7 @@ const ReplayScene = ({ data }) => {
           false,
           {
             fileName: "<stdin>",
-            lineNumber: 290,
+            lineNumber: 291,
             columnNumber: 21
           }
         ),
@@ -258,12 +259,12 @@ const ReplayScene = ({ data }) => {
           whiteSpace: "nowrap"
         }, children: playerInfo.username }, void 0, false, {
           fileName: "<stdin>",
-          lineNumber: 306,
+          lineNumber: 307,
           columnNumber: 21
         })
       ] }, void 0, true, {
         fileName: "<stdin>",
-        lineNumber: 284,
+        lineNumber: 285,
         columnNumber: 17
       }),
       /* @__PURE__ */ jsxDEV("div", { style: {
@@ -275,110 +276,104 @@ const ReplayScene = ({ data }) => {
         marginTop: "10px"
       }, children: score }, void 0, false, {
         fileName: "<stdin>",
-        lineNumber: 322,
+        lineNumber: 323,
         columnNumber: 17
       })
     ] }, void 0, true, {
       fileName: "<stdin>",
-      lineNumber: 274,
+      lineNumber: 275,
       columnNumber: 13
     }),
+    /* @__PURE__ */ jsxDEV(
+      "button",
+      {
+        type: "button",
+        onClick: () => setIsMuted((m) => !m),
+        style: {
+          position: "absolute",
+          right: "16px",
+          bottom: "16px",
+          width: "44px",
+          height: "44px",
+          borderRadius: "50%",
+          border: "none",
+          background: "rgba(0, 0, 0, 0.6)",
+          color: "#fff",
+          fontSize: "22px",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          cursor: "pointer",
+          pointerEvents: "auto"
+        },
+        "aria-label": "Toggle replay sound",
+        children: isMuted ? "\u{1F507}" : "\u{1F50A}"
+      },
+      void 0,
+      false,
+      {
+        fileName: "<stdin>",
+        lineNumber: 336,
+        columnNumber: 13
+      }
+    ),
     activeCues.map((cue) => {
       const duration = cue.name === "die" ? 150 : 30;
+      if (isMuted) return null;
       return /* @__PURE__ */ jsxDEV(Sequence, { from: cue.frame, durationInFrames: duration, children: /* @__PURE__ */ jsxDEV(Audio, { src: cue.src }, void 0, false, {
         fileName: "<stdin>",
-        lineNumber: 339,
+        lineNumber: 366,
         columnNumber: 25
       }) }, cue.id, false, {
         fileName: "<stdin>",
-        lineNumber: 338,
+        lineNumber: 365,
         columnNumber: 21
       });
     })
   ] }, void 0, true, {
     fileName: "<stdin>",
-    lineNumber: 270,
+    lineNumber: 271,
     columnNumber: 9
   });
 };
 let replayRoot = null;
-const ReplayWrapper = ({ replayData, initialMuted, onUnmute }) => {
-  const duration = replayData.frames.length;
-  const fps = replayData.config.fps || 30;
-  const containerRef = useRef(null);
-  useEffect(() => {
-    const container = containerRef.current;
-    if (!container) return;
-    const attachListeners = () => {
-      const mediaElements = container.querySelectorAll("audio, video");
-      mediaElements.forEach((el) => {
-        if (el.dataset.volumeBound) return;
-        el.dataset.volumeBound = "true";
-        el.addEventListener("volumechange", () => {
-          if (!el.muted && el.volume > 0) {
-            onUnmute();
-          }
-        });
-      });
-    };
-    attachListeners();
-    const observer = new MutationObserver(attachListeners);
-    observer.observe(container, { childList: true, subtree: true });
-    return () => observer.disconnect();
-  }, [onUnmute]);
-  return /* @__PURE__ */ jsxDEV("div", { ref: containerRef, style: { width: "100%", height: "100%", background: "#000" }, children: /* @__PURE__ */ jsxDEV(
-    Player,
-    {
-      component: ReplayScene,
-      inputProps: { data: replayData },
-      durationInFrames: duration,
-      fps,
-      compositionWidth: window.innerWidth,
-      compositionHeight: window.innerHeight,
-      style: { width: "100%", height: "100%" },
-      controls: true,
-      loop: true,
-      autoPlay: true,
-      volume: initialMuted ? 0 : 1,
-      numberOfSharedAudioTags: 20
-    },
-    void 0,
-    false,
-    {
-      fileName: "<stdin>",
-      lineNumber: 388,
-      columnNumber: 13
-    }
-  ) }, void 0, false, {
-    fileName: "<stdin>",
-    lineNumber: 387,
-    columnNumber: 9
-  });
-};
-const mountReplay = (containerId, replayData, initialMuted = false, onUnmute = () => {
-}) => {
+const mountReplay = (containerId, replayData) => {
   const container = document.getElementById(containerId);
   if (!container) return;
   if (replayRoot) {
     replayRoot.unmount();
   }
   replayRoot = createRoot(container);
+  const duration = replayData.frames.length;
+  const fps = replayData.config.fps || 30;
   replayRoot.render(
-    /* @__PURE__ */ jsxDEV(
-      ReplayWrapper,
+    /* @__PURE__ */ jsxDEV("div", { style: { width: "100%", height: "100%", background: "#000" }, children: /* @__PURE__ */ jsxDEV(
+      Player,
       {
-        replayData,
-        initialMuted,
-        onUnmute
+        component: ReplayScene,
+        inputProps: { data: replayData, initialMuted: replayData?.config?.muted },
+        durationInFrames: duration,
+        fps,
+        compositionWidth: window.innerWidth,
+        compositionHeight: window.innerHeight,
+        style: { width: "100%", height: "100%" },
+        controls: false,
+        loop: true,
+        autoPlay: true,
+        numberOfSharedAudioTags: 20
       },
       void 0,
       false,
       {
         fileName: "<stdin>",
-        lineNumber: 419,
-        columnNumber: 9
+        lineNumber: 394,
+        columnNumber: 13
       }
-    )
+    ) }, void 0, false, {
+      fileName: "<stdin>",
+      lineNumber: 393,
+      columnNumber: 9
+    })
   );
 };
 const unmountReplay = () => {
