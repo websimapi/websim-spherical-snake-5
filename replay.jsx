@@ -4,10 +4,11 @@ import { createRoot } from "react-dom/client";
 import { Player } from "@websim/remotion/player";
 import { AbsoluteFill, useCurrentFrame, useVideoConfig, Audio, Sequence } from "remotion";
 import * as THREE from "three";
-const ReplayScene = ({ data, muted = false, volume = 1 }) => {
+const ReplayScene = ({ data }) => {
   const frameIndex = useCurrentFrame();
   const { width, height } = useVideoConfig();
   const containerRef = useRef(null);
+  const [avatarSrc, setAvatarSrc] = useState(null);
   const audioCues = useMemo(() => {
     const cues = [];
     if (!data || !data.frames) return cues;
@@ -198,7 +199,7 @@ const ReplayScene = ({ data, muted = false, volume = 1 }) => {
   return /* @__PURE__ */ jsxDEV(AbsoluteFill, { children: [
     /* @__PURE__ */ jsxDEV("div", { ref: containerRef, style: { width: "100%", height: "100%" } }, void 0, false, {
       fileName: "<stdin>",
-      lineNumber: 270,
+      lineNumber: 271,
       columnNumber: 13
     }),
     /* @__PURE__ */ jsxDEV("div", { style: {
@@ -239,7 +240,7 @@ const ReplayScene = ({ data, muted = false, volume = 1 }) => {
           false,
           {
             fileName: "<stdin>",
-            lineNumber: 289,
+            lineNumber: 290,
             columnNumber: 21
           }
         ),
@@ -257,12 +258,12 @@ const ReplayScene = ({ data, muted = false, volume = 1 }) => {
           whiteSpace: "nowrap"
         }, children: playerInfo.username }, void 0, false, {
           fileName: "<stdin>",
-          lineNumber: 305,
+          lineNumber: 306,
           columnNumber: 21
         })
       ] }, void 0, true, {
         fileName: "<stdin>",
-        lineNumber: 283,
+        lineNumber: 284,
         columnNumber: 17
       }),
       /* @__PURE__ */ jsxDEV("div", { style: {
@@ -274,18 +275,17 @@ const ReplayScene = ({ data, muted = false, volume = 1 }) => {
         marginTop: "10px"
       }, children: score }, void 0, false, {
         fileName: "<stdin>",
-        lineNumber: 321,
+        lineNumber: 322,
         columnNumber: 17
       })
     ] }, void 0, true, {
       fileName: "<stdin>",
-      lineNumber: 273,
+      lineNumber: 274,
       columnNumber: 13
     }),
     activeCues.map((cue) => {
       const duration = cue.name === "die" ? 150 : 30;
-      if (muted || volume <= 0) return null;
-      return /* @__PURE__ */ jsxDEV(Sequence, { from: cue.frame, durationInFrames: duration, children: /* @__PURE__ */ jsxDEV(Audio, { src: cue.src, volume }, void 0, false, {
+      return /* @__PURE__ */ jsxDEV(Sequence, { from: cue.frame, durationInFrames: duration, children: /* @__PURE__ */ jsxDEV(Audio, { src: cue.src }, void 0, false, {
         fileName: "<stdin>",
         lineNumber: 338,
         columnNumber: 25
@@ -297,182 +297,7 @@ const ReplayScene = ({ data, muted = false, volume = 1 }) => {
     })
   ] }, void 0, true, {
     fileName: "<stdin>",
-    lineNumber: 269,
-    columnNumber: 9
-  });
-};
-const ReplayPlayerWrapper = ({ replayData }) => {
-  const duration = replayData.frames.length;
-  const fps = replayData.config.fps || 30;
-  const [playing, setPlaying] = useState(true);
-  const [muted, setMuted] = useState(!!replayData?.config?.muted);
-  const [volume, setVolume] = useState(1);
-  return /* @__PURE__ */ jsxDEV("div", { style: { width: "100%", height: "100%", background: "#000", position: "relative" }, children: [
-    /* @__PURE__ */ jsxDEV(
-      Player,
-      {
-        component: ReplayScene,
-        inputProps: { data: replayData, muted, volume },
-        durationInFrames: duration,
-        fps,
-        compositionWidth: window.innerWidth,
-        compositionHeight: window.innerHeight,
-        style: { width: "100%", height: "100%" },
-        controls: false,
-        loop: true,
-        autoPlay: playing,
-        playing,
-        numberOfSharedAudioTags: 20
-      },
-      void 0,
-      false,
-      {
-        fileName: "<stdin>",
-        lineNumber: 356,
-        columnNumber: 13
-      }
-    ),
-    /* @__PURE__ */ jsxDEV(
-      "div",
-      {
-        style: {
-          position: "absolute",
-          left: 0,
-          right: 0,
-          bottom: 16,
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          gap: 12,
-          pointerEvents: "none"
-        },
-        children: [
-          /* @__PURE__ */ jsxDEV(
-            "button",
-            {
-              type: "button",
-              onClick: () => setPlaying((p) => !p),
-              style: {
-                width: 44,
-                height: 44,
-                borderRadius: "50%",
-                border: "none",
-                background: "rgba(0,0,0,0.6)",
-                color: "#fff",
-                fontSize: 20,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                cursor: "pointer",
-                pointerEvents: "auto"
-              },
-              "aria-label": playing ? "Pause replay" : "Play replay",
-              children: playing ? "\u23F8" : "\u25B6\uFE0F"
-            },
-            void 0,
-            false,
-            {
-              fileName: "<stdin>",
-              lineNumber: 386,
-              columnNumber: 17
-            }
-          ),
-          /* @__PURE__ */ jsxDEV(
-            "div",
-            {
-              style: {
-                display: "flex",
-                alignItems: "center",
-                gap: 8,
-                padding: "6px 10px",
-                borderRadius: 999,
-                background: "rgba(0,0,0,0.6)",
-                pointerEvents: "auto"
-              },
-              children: [
-                /* @__PURE__ */ jsxDEV("span", { style: { color: "#fff", fontSize: 16 }, children: muted || volume === 0 ? "\u{1F507}" : volume < 0.5 ? "\u{1F509}" : "\u{1F50A}" }, void 0, false, {
-                  fileName: "<stdin>",
-                  lineNumber: 420,
-                  columnNumber: 21
-                }),
-                /* @__PURE__ */ jsxDEV(
-                  "input",
-                  {
-                    type: "range",
-                    min: "0",
-                    max: "1",
-                    step: "0.05",
-                    value: muted ? 0 : volume,
-                    onChange: (e) => {
-                      const v = parseFloat(e.target.value);
-                      setVolume(v);
-                      if (v === 0 && !muted) setMuted(true);
-                      if (v > 0 && muted) setMuted(false);
-                    },
-                    style: { width: 140 },
-                    "aria-label": "Replay volume"
-                  },
-                  void 0,
-                  false,
-                  {
-                    fileName: "<stdin>",
-                    lineNumber: 423,
-                    columnNumber: 21
-                  }
-                )
-              ]
-            },
-            void 0,
-            true,
-            {
-              fileName: "<stdin>",
-              lineNumber: 409,
-              columnNumber: 17
-            }
-          ),
-          /* @__PURE__ */ jsxDEV(
-            "button",
-            {
-              type: "button",
-              onClick: () => setMuted((m) => !m),
-              style: {
-                width: 44,
-                height: 44,
-                borderRadius: "50%",
-                border: "none",
-                background: "rgba(0,0,0,0.6)",
-                color: "#fff",
-                fontSize: 20,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                cursor: "pointer",
-                pointerEvents: "auto"
-              },
-              "aria-label": "Toggle replay mute",
-              children: muted ? "\u{1F507}" : "\u{1F50A}"
-            },
-            void 0,
-            false,
-            {
-              fileName: "<stdin>",
-              lineNumber: 441,
-              columnNumber: 17
-            }
-          )
-        ]
-      },
-      void 0,
-      true,
-      {
-        fileName: "<stdin>",
-        lineNumber: 372,
-        columnNumber: 13
-      }
-    )
-  ] }, void 0, true, {
-    fileName: "<stdin>",
-    lineNumber: 355,
+    lineNumber: 270,
     columnNumber: 9
   });
 };
@@ -484,10 +309,34 @@ const mountReplay = (containerId, replayData) => {
     replayRoot.unmount();
   }
   replayRoot = createRoot(container);
+  const duration = replayData.frames.length;
+  const fps = replayData.config.fps || 30;
   replayRoot.render(
-    /* @__PURE__ */ jsxDEV(ReplayPlayerWrapper, { replayData }, void 0, false, {
+    /* @__PURE__ */ jsxDEV("div", { style: { width: "100%", height: "100%", background: "#000" }, children: /* @__PURE__ */ jsxDEV(
+      Player,
+      {
+        component: ReplayScene,
+        inputProps: { data: replayData },
+        durationInFrames: duration,
+        fps,
+        compositionWidth: window.innerWidth,
+        compositionHeight: window.innerHeight,
+        style: { width: "100%", height: "100%" },
+        controls: true,
+        loop: true,
+        autoPlay: true,
+        numberOfSharedAudioTags: 20
+      },
+      void 0,
+      false,
+      {
+        fileName: "<stdin>",
+        lineNumber: 366,
+        columnNumber: 13
+      }
+    ) }, void 0, false, {
       fileName: "<stdin>",
-      lineNumber: 483,
+      lineNumber: 365,
       columnNumber: 9
     })
   );
