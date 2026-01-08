@@ -319,7 +319,8 @@ const ReplayContainer = ({ data }) => {
         controls: true,
         loop: true,
         autoPlay: true,
-        numberOfSharedAudioTags: 20
+        numberOfSharedAudioTags: 20,
+        showRenderButton: false
       },
       void 0,
       false,
@@ -335,9 +336,8 @@ const ReplayContainer = ({ data }) => {
         onClick: () => setIsMuted(!isMuted),
         style: {
           position: "absolute",
-          right: "20px",
-          bottom: "80px",
-          // Positioned above the player control bar
+          right: "16px",
+          bottom: "16px",
           zIndex: 100,
           width: "44px",
           height: "44px",
@@ -358,7 +358,7 @@ const ReplayContainer = ({ data }) => {
       false,
       {
         fileName: "<stdin>",
-        lineNumber: 368,
+        lineNumber: 369,
         columnNumber: 13
       }
     )
@@ -378,7 +378,7 @@ const mountReplay = (containerId, replayData) => {
   replayRoot = createRoot(container);
   replayRoot.render(/* @__PURE__ */ jsxDEV(ReplayContainer, { data: replayData }, void 0, false, {
     fileName: "<stdin>",
-    lineNumber: 408,
+    lineNumber: 409,
     columnNumber: 23
   }));
 };
