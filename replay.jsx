@@ -285,13 +285,15 @@ const ReplayScene = ({ data }) => {
     }),
     activeCues.map((cue) => {
       const duration = cue.name === "die" ? 150 : 30;
+      const muted = data?.config?.muted;
+      if (muted) return null;
       return /* @__PURE__ */ jsxDEV(Sequence, { from: cue.frame, durationInFrames: duration, children: /* @__PURE__ */ jsxDEV(Audio, { src: cue.src }, void 0, false, {
         fileName: "<stdin>",
-        lineNumber: 338,
+        lineNumber: 340,
         columnNumber: 25
       }) }, cue.id, false, {
         fileName: "<stdin>",
-        lineNumber: 337,
+        lineNumber: 339,
         columnNumber: 21
       });
     })
@@ -331,12 +333,12 @@ const mountReplay = (containerId, replayData) => {
       false,
       {
         fileName: "<stdin>",
-        lineNumber: 366,
+        lineNumber: 368,
         columnNumber: 13
       }
     ) }, void 0, false, {
       fileName: "<stdin>",
-      lineNumber: 365,
+      lineNumber: 367,
       columnNumber: 9
     })
   );

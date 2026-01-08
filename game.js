@@ -273,7 +273,8 @@ export class Game {
             sounds: {
                 eat: './snake_eat.mp3',
                 die: './game_over.mp3'
-            }
+            },
+            muted: this.audioManager.isMuted()
         });
     }
 
