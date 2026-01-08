@@ -4,7 +4,7 @@ import { createRoot } from "react-dom/client";
 import { Player } from "@websim/remotion/player";
 import { AbsoluteFill, useCurrentFrame, useVideoConfig, Audio, Sequence } from "remotion";
 import * as THREE from "three";
-const ReplayScene = ({ data }) => {
+const ReplayScene = ({ data, isMuted }) => {
   const frameIndex = useCurrentFrame();
   const { width, height } = useVideoConfig();
   const containerRef = useRef(null);
@@ -196,11 +196,10 @@ const ReplayScene = ({ data }) => {
   const currentFrameData = data.frames[Math.min(Math.floor(frameIndex), data.frames.length - 1)] || {};
   const score = currentFrameData.score || 0;
   const playerInfo = data.config.playerInfo || { username: "Player", avatarUrl: "./default_avatar.png" };
-  const [isMuted, setIsMuted] = useState(() => data.config?.muted || false);
   return /* @__PURE__ */ jsxDEV(AbsoluteFill, { children: [
     /* @__PURE__ */ jsxDEV("div", { ref: containerRef, style: { width: "100%", height: "100%" } }, void 0, false, {
       fileName: "<stdin>",
-      lineNumber: 274,
+      lineNumber: 271,
       columnNumber: 13
     }),
     /* @__PURE__ */ jsxDEV("div", { style: {
@@ -241,7 +240,7 @@ const ReplayScene = ({ data }) => {
           false,
           {
             fileName: "<stdin>",
-            lineNumber: 293,
+            lineNumber: 290,
             columnNumber: 21
           }
         ),
@@ -259,12 +258,12 @@ const ReplayScene = ({ data }) => {
           whiteSpace: "nowrap"
         }, children: playerInfo.username }, void 0, false, {
           fileName: "<stdin>",
-          lineNumber: 309,
+          lineNumber: 306,
           columnNumber: 21
         })
       ] }, void 0, true, {
         fileName: "<stdin>",
-        lineNumber: 287,
+        lineNumber: 284,
         columnNumber: 17
       }),
       /* @__PURE__ */ jsxDEV("div", { style: {
@@ -276,84 +275,42 @@ const ReplayScene = ({ data }) => {
         marginTop: "10px"
       }, children: score }, void 0, false, {
         fileName: "<stdin>",
-        lineNumber: 325,
+        lineNumber: 322,
         columnNumber: 17
       })
     ] }, void 0, true, {
       fileName: "<stdin>",
-      lineNumber: 277,
+      lineNumber: 274,
       columnNumber: 13
     }),
-    /* @__PURE__ */ jsxDEV(
-      "button",
-      {
-        onClick: (e) => {
-          e.stopPropagation();
-          setIsMuted(!isMuted);
-        },
-        style: {
-          position: "absolute",
-          right: "20px",
-          bottom: "70px",
-          // Positioned above the player control bar
-          zIndex: 50,
-          width: "44px",
-          height: "44px",
-          borderRadius: "50%",
-          border: "none",
-          background: "rgba(0, 0, 0, 0.6)",
-          color: "#fff",
-          fontSize: "22px",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          pointerEvents: "auto",
-          cursor: "pointer"
-        },
-        children: isMuted ? "\u{1F507}" : "\u{1F50A}"
-      },
-      void 0,
-      false,
-      {
-        fileName: "<stdin>",
-        lineNumber: 338,
-        columnNumber: 13
-      }
-    ),
     activeCues.map((cue) => {
       const duration = cue.name === "die" ? 150 : 30;
       return /* @__PURE__ */ jsxDEV(Sequence, { from: cue.frame, durationInFrames: duration, children: /* @__PURE__ */ jsxDEV(Audio, { src: cue.src, volume: isMuted ? 0 : 1 }, void 0, false, {
         fileName: "<stdin>",
-        lineNumber: 369,
+        lineNumber: 338,
         columnNumber: 25
       }) }, cue.id, false, {
         fileName: "<stdin>",
-        lineNumber: 368,
+        lineNumber: 337,
         columnNumber: 21
       });
     })
   ] }, void 0, true, {
     fileName: "<stdin>",
-    lineNumber: 273,
+    lineNumber: 270,
     columnNumber: 9
   });
 };
-let replayRoot = null;
-const mountReplay = (containerId, replayData) => {
-  const container = document.getElementById(containerId);
-  if (!container) return;
-  if (replayRoot) {
-    replayRoot.unmount();
-  }
-  replayRoot = createRoot(container);
-  const duration = replayData.frames.length;
-  const fps = replayData.config.fps || 30;
-  replayRoot.render(
-    /* @__PURE__ */ jsxDEV("div", { style: { width: "100%", height: "100%", background: "#000" }, children: /* @__PURE__ */ jsxDEV(
+const ReplayContainer = ({ data }) => {
+  const [isMuted, setIsMuted] = useState(() => data.config?.muted || false);
+  const duration = data.frames.length;
+  const fps = data.config.fps || 30;
+  return /* @__PURE__ */ jsxDEV("div", { style: { width: "100%", height: "100%", position: "relative", background: "#000" }, children: [
+    /* @__PURE__ */ jsxDEV(
       Player,
       {
         component: ReplayScene,
-        inputProps: { data: replayData },
+        inputProps: { data, isMuted },
         durationInFrames: duration,
         fps,
         compositionWidth: window.innerWidth,
@@ -368,15 +325,62 @@ const mountReplay = (containerId, replayData) => {
       false,
       {
         fileName: "<stdin>",
-        lineNumber: 397,
+        lineNumber: 355,
         columnNumber: 13
       }
-    ) }, void 0, false, {
-      fileName: "<stdin>",
-      lineNumber: 396,
-      columnNumber: 9
-    })
-  );
+    ),
+    /* @__PURE__ */ jsxDEV(
+      "button",
+      {
+        onClick: () => setIsMuted(!isMuted),
+        style: {
+          position: "absolute",
+          right: "20px",
+          bottom: "80px",
+          // Positioned above the player control bar
+          zIndex: 100,
+          width: "44px",
+          height: "44px",
+          borderRadius: "50%",
+          border: "none",
+          background: "rgba(0, 0, 0, 0.6)",
+          color: "#fff",
+          fontSize: "22px",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          cursor: "pointer",
+          pointerEvents: "auto"
+        },
+        children: isMuted ? "\u{1F507}" : "\u{1F50A}"
+      },
+      void 0,
+      false,
+      {
+        fileName: "<stdin>",
+        lineNumber: 368,
+        columnNumber: 13
+      }
+    )
+  ] }, void 0, true, {
+    fileName: "<stdin>",
+    lineNumber: 354,
+    columnNumber: 9
+  });
+};
+let replayRoot = null;
+const mountReplay = (containerId, replayData) => {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+  if (replayRoot) {
+    replayRoot.unmount();
+  }
+  replayRoot = createRoot(container);
+  replayRoot.render(/* @__PURE__ */ jsxDEV(ReplayContainer, { data: replayData }, void 0, false, {
+    fileName: "<stdin>",
+    lineNumber: 408,
+    columnNumber: 23
+  }));
 };
 const unmountReplay = () => {
   if (replayRoot) {
