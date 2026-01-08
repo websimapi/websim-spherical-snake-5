@@ -17,6 +17,7 @@ export class AudioManager {
     }
 
     play(name) {
+        if (this.muted) return;
         if (this.sounds[name] && this.audioCtx.state === 'running') {
             const source = this.audioCtx.createBufferSource();
             source.buffer = this.sounds[name];
@@ -33,5 +34,18 @@ export class AudioManager {
 
     getState() {
         return this.audioCtx.state;
+    }
+
+    toggleMuted() {
+        this.muted = !this.muted;
+        return this.muted;
+    }
+
+    setMuted(value) {
+        this.muted = !!value;
+    }
+
+    isMuted() {
+        return this.muted;
     }
 }
