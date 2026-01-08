@@ -196,10 +196,11 @@ const ReplayScene = ({ data }) => {
   const currentFrameData = data.frames[Math.min(Math.floor(frameIndex), data.frames.length - 1)] || {};
   const score = currentFrameData.score || 0;
   const playerInfo = data.config.playerInfo || { username: "Player", avatarUrl: "./default_avatar.png" };
+  const [isMuted, setIsMuted] = useState(() => data.config?.muted || false);
   return /* @__PURE__ */ jsxDEV(AbsoluteFill, { children: [
     /* @__PURE__ */ jsxDEV("div", { ref: containerRef, style: { width: "100%", height: "100%" } }, void 0, false, {
       fileName: "<stdin>",
-      lineNumber: 271,
+      lineNumber: 274,
       columnNumber: 13
     }),
     /* @__PURE__ */ jsxDEV("div", { style: {
@@ -240,7 +241,7 @@ const ReplayScene = ({ data }) => {
           false,
           {
             fileName: "<stdin>",
-            lineNumber: 290,
+            lineNumber: 293,
             columnNumber: 21
           }
         ),
@@ -258,12 +259,12 @@ const ReplayScene = ({ data }) => {
           whiteSpace: "nowrap"
         }, children: playerInfo.username }, void 0, false, {
           fileName: "<stdin>",
-          lineNumber: 306,
+          lineNumber: 309,
           columnNumber: 21
         })
       ] }, void 0, true, {
         fileName: "<stdin>",
-        lineNumber: 284,
+        lineNumber: 287,
         columnNumber: 17
       }),
       /* @__PURE__ */ jsxDEV("div", { style: {
@@ -275,29 +276,65 @@ const ReplayScene = ({ data }) => {
         marginTop: "10px"
       }, children: score }, void 0, false, {
         fileName: "<stdin>",
-        lineNumber: 322,
+        lineNumber: 325,
         columnNumber: 17
       })
     ] }, void 0, true, {
       fileName: "<stdin>",
-      lineNumber: 274,
+      lineNumber: 277,
       columnNumber: 13
     }),
-    activeCues.map((cue) => {
-      const duration = cue.name === "die" ? 150 : 30;
-      return /* @__PURE__ */ jsxDEV(Sequence, { from: cue.frame, durationInFrames: duration, children: /* @__PURE__ */ jsxDEV(Audio, { src: cue.src }, void 0, false, {
+    /* @__PURE__ */ jsxDEV(
+      "button",
+      {
+        onClick: (e) => {
+          e.stopPropagation();
+          setIsMuted(!isMuted);
+        },
+        style: {
+          position: "absolute",
+          right: "20px",
+          bottom: "70px",
+          // Positioned above the player control bar
+          zIndex: 50,
+          width: "44px",
+          height: "44px",
+          borderRadius: "50%",
+          border: "none",
+          background: "rgba(0, 0, 0, 0.6)",
+          color: "#fff",
+          fontSize: "22px",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          pointerEvents: "auto",
+          cursor: "pointer"
+        },
+        children: isMuted ? "\u{1F507}" : "\u{1F50A}"
+      },
+      void 0,
+      false,
+      {
         fileName: "<stdin>",
         lineNumber: 338,
+        columnNumber: 13
+      }
+    ),
+    activeCues.map((cue) => {
+      const duration = cue.name === "die" ? 150 : 30;
+      return /* @__PURE__ */ jsxDEV(Sequence, { from: cue.frame, durationInFrames: duration, children: /* @__PURE__ */ jsxDEV(Audio, { src: cue.src, volume: isMuted ? 0 : 1 }, void 0, false, {
+        fileName: "<stdin>",
+        lineNumber: 369,
         columnNumber: 25
       }) }, cue.id, false, {
         fileName: "<stdin>",
-        lineNumber: 337,
+        lineNumber: 368,
         columnNumber: 21
       });
     })
   ] }, void 0, true, {
     fileName: "<stdin>",
-    lineNumber: 270,
+    lineNumber: 273,
     columnNumber: 9
   });
 };
@@ -331,12 +368,12 @@ const mountReplay = (containerId, replayData) => {
       false,
       {
         fileName: "<stdin>",
-        lineNumber: 366,
+        lineNumber: 397,
         columnNumber: 13
       }
     ) }, void 0, false, {
       fileName: "<stdin>",
-      lineNumber: 365,
+      lineNumber: 396,
       columnNumber: 9
     })
   );
