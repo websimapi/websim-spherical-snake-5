@@ -302,44 +302,83 @@ const ReplayScene = ({ data }) => {
   });
 };
 let replayRoot = null;
-const mountReplay = (containerId, replayData) => {
+const ReplayWrapper = ({ replayData, initialMuted, onUnmute }) => {
+  const duration = replayData.frames.length;
+  const fps = replayData.config.fps || 30;
+  const containerRef = useRef(null);
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+    const attachListeners = () => {
+      const mediaElements = container.querySelectorAll("audio, video");
+      mediaElements.forEach((el) => {
+        if (el.dataset.volumeBound) return;
+        el.dataset.volumeBound = "true";
+        el.addEventListener("volumechange", () => {
+          if (!el.muted && el.volume > 0) {
+            onUnmute();
+          }
+        });
+      });
+    };
+    attachListeners();
+    const observer = new MutationObserver(attachListeners);
+    observer.observe(container, { childList: true, subtree: true });
+    return () => observer.disconnect();
+  }, [onUnmute]);
+  return /* @__PURE__ */ jsxDEV("div", { ref: containerRef, style: { width: "100%", height: "100%", background: "#000" }, children: /* @__PURE__ */ jsxDEV(
+    Player,
+    {
+      component: ReplayScene,
+      inputProps: { data: replayData },
+      durationInFrames: duration,
+      fps,
+      compositionWidth: window.innerWidth,
+      compositionHeight: window.innerHeight,
+      style: { width: "100%", height: "100%" },
+      controls: true,
+      loop: true,
+      autoPlay: true,
+      volume: initialMuted ? 0 : 1,
+      numberOfSharedAudioTags: 20
+    },
+    void 0,
+    false,
+    {
+      fileName: "<stdin>",
+      lineNumber: 388,
+      columnNumber: 13
+    }
+  ) }, void 0, false, {
+    fileName: "<stdin>",
+    lineNumber: 387,
+    columnNumber: 9
+  });
+};
+const mountReplay = (containerId, replayData, initialMuted = false, onUnmute = () => {
+}) => {
   const container = document.getElementById(containerId);
   if (!container) return;
   if (replayRoot) {
     replayRoot.unmount();
   }
   replayRoot = createRoot(container);
-  const duration = replayData.frames.length;
-  const fps = replayData.config.fps || 30;
   replayRoot.render(
-    /* @__PURE__ */ jsxDEV("div", { style: { width: "100%", height: "100%", background: "#000" }, children: /* @__PURE__ */ jsxDEV(
-      Player,
+    /* @__PURE__ */ jsxDEV(
+      ReplayWrapper,
       {
-        component: ReplayScene,
-        inputProps: { data: replayData },
-        durationInFrames: duration,
-        fps,
-        compositionWidth: window.innerWidth,
-        compositionHeight: window.innerHeight,
-        style: { width: "100%", height: "100%" },
-        controls: true,
-        loop: true,
-        autoPlay: true,
-        volume: 0,
-        numberOfSharedAudioTags: 20
+        replayData,
+        initialMuted,
+        onUnmute
       },
       void 0,
       false,
       {
         fileName: "<stdin>",
-        lineNumber: 367,
-        columnNumber: 13
+        lineNumber: 419,
+        columnNumber: 9
       }
-    ) }, void 0, false, {
-      fileName: "<stdin>",
-      lineNumber: 366,
-      columnNumber: 9
-    })
+    )
   );
 };
 const unmountReplay = () => {

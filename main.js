@@ -145,7 +145,16 @@ document.getElementById('btn-replay').addEventListener('click', async (e) => {
     const { mountReplay } = await import('./replay.jsx');
     
     const data = game.getReplayJSON();
-    mountReplay('replay-root', data);
+    const isMuted = game.audioManager.isMuted();
+    
+    mountReplay('replay-root', data, isMuted, () => {
+        // Callback to unmute game globally if replay is unmuted
+        if (game.audioManager.isMuted()) {
+            game.audioManager.setMuted(false);
+            const btn = document.getElementById('mute-toggle');
+            if (btn) btn.textContent = '🔊';
+        }
+    });
 });
 
 // Close Replay
